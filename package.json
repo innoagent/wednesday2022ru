@@ -1,0 +1,37 @@
+{
+  "name": "wednesday2022ru",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build:dev": "webpack --env mode=development",
+    "build:prod": "webpack --env mode=production",
+    "serve": "webpack serve --env mode=development",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innoagent/wednesday2022ru.git"
+  },
+  "keywords": [
+    "wednesday"
+  ],
+  "author": "Daniil Mitrofanov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/innoagent/wednesday2022ru/issues"
+  },
+  "homepage": "https://github.com/innoagent/wednesday2022ru#readme",
+  "devDependencies": {
+    "css-loader": "^6.7.2",
+    "html-webpack-plugin": "^5.5.0",
+    "sass": "^1.56.1",
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.4.1",
+    "typescript": "^4.9.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.11.1"
+  }
+}
