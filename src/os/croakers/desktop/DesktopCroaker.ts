@@ -44,9 +44,10 @@ class DesktopCroaker extends Croaker {
     }
 
     public onUpdate() {
-        this._drawableWindows.forEach((window) => {
-            window.invokeDrawEvent();
-        });
+        const drawableWindows: Array<Window> = [];
+        this._drawableWindows.forEach((window) => drawableWindows.push(window));
+        drawableWindows.sort((a, b) => a.lastFocusTime - b.lastFocusTime);
+        drawableWindows.forEach((window, index) => window.invokeDrawEvent(index))
     }
 }
 

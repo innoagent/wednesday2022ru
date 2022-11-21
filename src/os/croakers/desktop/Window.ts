@@ -1,5 +1,5 @@
 import Kernel from "../../Kernel";
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
 
 type DrawEvent = (canvas: CanvasRenderingContext2D, delta: number) => void;
 
@@ -46,10 +46,11 @@ export class Window {
     public get isShow(): boolean {
         return this._isShow;
     }
+
     public set isShow(value: boolean) {
         this._isShow = value;
 
-        if(this._isShow) {
+        if (this._isShow) {
             Kernel.kernel.desktopCroaker.subscribeDrawEvent(this);
         } else {
             Kernel.kernel.desktopCroaker.unsubscribeDrawEvent(this);
@@ -61,7 +62,15 @@ export class Window {
         return this._windowDiv;
     }
 
+    private _windowCaption: HTMLDivElement = undefined;
+    public get windowCaption(): HTMLDivElement {
+        return this._windowCaption;
+    }
+
     private _windowCanvas: HTMLCanvasElement = undefined;
+    public get windowCanvas(): HTMLCanvasElement {
+        return this._windowCanvas;
+    }
 
     public lastUpdateTime: number = performance.now();
 
@@ -72,7 +81,7 @@ export class Window {
         this._style = options.style ?? options.style;
         this._onDraw = options.onDraw;
 
-        if(this._style === WindowStyle.Bordered || this._style === WindowStyle.Borderless) {
+        if (this._style === WindowStyle.Bordered || this._style === WindowStyle.Borderless) {
             this._width = options.width ?? this._width;
             this._height = options.height ?? this._height;
             this._x = options.x;
@@ -91,6 +100,23 @@ export class Window {
         this._windowDiv = document.createElement('div');
         this._windowDiv.classList.add('window');
         this._windowDiv.classList.add('window--' + this._style);
+        this._windowDiv.addEventListener('mousemove', this.onMouseMove.bind(this));
+        this._windowDiv.addEventListener('mousedown', this.onMouseDown.bind(this));
+        this._windowDiv.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+        this._windowCaption = document.createElement('div');
+        this._windowCaption.classList.add('window-caption');
+        this._windowCaption.addEventListener('mousemove', this.onMouseMove.bind(this));
+        this._windowCaption.addEventListener('mousedown', this.onMouseDown.bind(this));
+        this._windowCaption.addEventListener('mouseup', this.onMouseUp.bind(this));
+        this._windowCaption.addEventListener('mouseleave', this.onMouseLeave.bind(this));
+
+        const windowTitle = document.createElement('span');
+        windowTitle.classList.add('window-caption--title');
+        windowTitle.textContent = this._name;
+        this._windowCaption.appendChild(windowTitle);
+
+        this._windowDiv.appendChild(this._windowCaption);
 
         this._windowCanvas = document.createElement('canvas');
         this._windowCanvas.width = this.width;
@@ -98,11 +124,12 @@ export class Window {
         this._windowDiv.appendChild(this._windowCanvas);
     }
 
-    public invokeDrawEvent(): void {
+    public invokeDrawEvent(zIndex: number): void {
+        this._windowDiv.style.zIndex = `${zIndex + 100}`;
         this._windowDiv.style.top = `${this._y}px`;
         this._windowDiv.style.left = `${this._x}px`;
         this._windowDiv.style.width = `calc(${this.width}px + var(--window-border-width) * 2 + var(--window-border-outline-width) * 2)`;
-        this._windowDiv.style.height = `calc(${this.height}px + var(--window-border-width) + var(--window-border-width))`;
+        this._windowDiv.style.height = `calc(${this.height}px + var(--window-border-width) + var(--window-border-width) + var(--window-caption-height))`;
 
         const context = this._windowCanvas.getContext('2d');
         context.fillStyle = '#FFF';
@@ -113,5 +140,49 @@ export class Window {
         this._onDraw?.(context, delta);
 
         this.lastUpdateTime = performance.now();
+    }
+
+    private _isDrag: boolean = false;
+    private _dragMousePosition: { x: number, y: number } = {x: 0, y: 0};
+    private _dragWindowPosition: { x: number, y: number } = {x: 0, y: 0};
+
+
+    private _lastFocusTime: number = Date.now();
+    public get lastFocusTime (): number {
+        return this._lastFocusTime;
+    }
+
+    public onMouseMove(event: MouseEvent) {
+        if (this._isDrag && event.target === this._windowCaption) {
+            const translation = {
+                x: event.clientX - this._dragMousePosition.x,
+                y: event.clientY - this._dragMousePosition.y,
+            }
+
+            this._x = this._dragWindowPosition.x + translation.x;
+            this._y = this._dragWindowPosition.y + translation.y;
+        }
+    }
+
+    public onMouseDown(event: MouseEvent) {
+        if (event.target === this._windowCaption) {
+            this._isDrag = true;
+            this._dragMousePosition = {x: event.clientX, y: event.clientY};
+            this._dragWindowPosition = {x: this._x, y: this._y};
+
+            this._lastFocusTime = Date.now();
+        }
+    }
+
+    public onMouseUp(event: MouseEvent) {
+        if (event.target === this._windowCaption) {
+            this._isDrag = false;
+        }
+    }
+
+    public onMouseLeave(event: MouseEvent) {
+        if (event.target === this._windowCaption) {
+            this._isDrag = false;
+        }
     }
 }

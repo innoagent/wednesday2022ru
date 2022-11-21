@@ -22,9 +22,30 @@ body {
 
     &--bordered {
         display: flex;
+        flex-direction: column;
         background-color: var(--window-border-color);
         border-radius: var(--window-border-radius);
         border: var(--window-border-outline-width) solid var(--window-border-outline-color);
-        padding: var(--window-caption-height) var(--window-border-width) var(--window-border-width);
+        padding: var(--window-border-width);
+    }
+
+    &-caption {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+
+        background-color: var(--window-border-color);
+        width: 100%;
+        height: var(--window-caption-height);
+        min-height: var(--window-caption-height);
+        max-height: var(--window-caption-height);
+
+        &--title {
+            font-size: 12px;
+            font-family: sans-serif;
+            pointer-events: none;
+            user-select: none;
+        }
     }
 }
