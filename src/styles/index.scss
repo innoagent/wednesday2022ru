@@ -1,4 +1,30 @@
+:root {
+    --window-border-radius: 6px;
+    --window-border-width: 6px;
+    --window-border-color: lightblue;
+    --window-border-outline-color: gray;
+    --window-border-outline-width: 1px;
+    --window-caption-height: 32px;
+}
+
 body {
     margin: 0;
     padding: 0;
+
+    background-color: #000;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+.window {
+    position: absolute;
+
+    &--bordered {
+        display: flex;
+        background-color: var(--window-border-color);
+        border-radius: var(--window-border-radius);
+        border: var(--window-border-outline-width) solid var(--window-border-outline-color);
+        padding: var(--window-caption-height) var(--window-border-width) var(--window-border-width);
+    }
 }

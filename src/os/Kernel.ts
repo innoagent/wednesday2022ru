@@ -1,6 +1,5 @@
 import Croaker from "./croakers/Croaker";
-import DesktopCroaker from "./croakers/DesktopCroaker";
-import WednesdayCroakers from "./croakers/WednesdayCroakers";
+import DesktopCroaker from "./croakers/desktop/DesktopCroaker";
 
 
 class Kernel {
@@ -8,6 +7,10 @@ class Kernel {
 
     public croak(): void {
         this.initCroakers();
+
+        setInterval(() => {
+            this.desktopCroaker.onUpdate();
+        }, 1);
     }
 
     private initCroakers(): void {
@@ -15,10 +18,8 @@ class Kernel {
         this._croakers.set(DesktopCroaker.name, new DesktopCroaker());
     }
 
-    private get wednesdayCroakers(): WednesdayCroakers {
-        return {
-            desktop: this._croakers.get(DesktopCroaker.name),
-        };
+    public get desktopCroaker(): DesktopCroaker {
+        return this._croakers.get(DesktopCroaker.name) as DesktopCroaker;
     }
 
 
@@ -27,7 +28,7 @@ class Kernel {
         return this._kernel ?? (this._kernel = new Kernel());
     }
 
-    private constructor() 
+    private constructor()
     {}
 }
 
